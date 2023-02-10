@@ -1,0 +1,4 @@
+Fecha = '//a[@class="Evento"]//h2/text()'
+Titulo = '//a[@class="Evento"]//h3/text()'
+Descripcion = '//a[@class="Evento"]//p/text()'
+Link = '//a[@class="Evento"]//img/@src'
