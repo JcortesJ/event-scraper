@@ -1,4 +1,13 @@
+Para bienestar 
+
 Fecha = '//a[@class="Evento"]//h2/text()'
 Titulo = '//a[@class="Evento"]//h3/text()'
 Descripcion = '//a[@class="Evento"]//p/text()'
 Link = '//a[@class="Evento"]//img/@src'
+
+----
+
+Para circular un
+
+link_circular = '//div[@class="news-divlist-body"]//div[@class="news-divlist-link"]//a/@href'
+
