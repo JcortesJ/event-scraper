@@ -4,6 +4,7 @@ import requests
 import lxml.html as html
 #nos permite manipular un archivo html desde python
 from file_creator import create_file
+from conexion import upload_data
 
 
 
@@ -55,20 +56,24 @@ def parse_circular(link):
                 m_info.replace('\n','')
                 m_info.replace('\t','')
                 print('datos tomados, escribiendo en archivo..')
+                print('-----------')
                 
             except IndexError:
                 return
             #creamos el archivo
             data_up = {'titulo':title,'lugar':lugar,'creador':autor,'descripcion':summary,'link_img':m_info,'fecha':date}
             create_file(data_up)
+            upload_data(data_up,'Evento',str(random.randint(0,10000)))
     except ValueError as ve:
         print(ve)
 
 def parse_bienestar(link,titles,descs,dates,creador,lugar):
     for i in range(len(link)):
             #creamos el diccionario
+            print('evento bienestar: ' +str(i))
             data_up = {'titulo':titles[i],'lugar':lugar,'creador':creador,'descripcion':descs[i],'link_img':link[i],'fecha':dates[i]}
             create_file(data_ev=data_up)
+            upload_data(data_up,'Evento',str(random.randint(0,10000)))
 
 def connect_bienestar():
     #antes que nada metemos nuestro codigo en  un try-catch
@@ -110,7 +115,6 @@ def connect_circular():
             links_circular = parsed.xpath(CIRCULAR_LINK)
           
             for link in links_circular:
-                print('entrando al link: ' + link)
                 parse_circular(link)
             
         else:

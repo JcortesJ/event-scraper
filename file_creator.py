@@ -27,10 +27,5 @@ def create_file(data_ev):
                 f.write('\n')  
                 f.write('Lugar: ')
                 f.write(data_ev['lugar'])
+    return 0
 
-
-def run():
-    pass
-
-if __name__ == '__main__':
-    run()
