@@ -3,10 +3,9 @@ import requests
 #nos permite conectarnos a la web
 import lxml.html as html
 #nos permite manipular un archivo html desde python
-import os
-#permite trabajar con fechas
-import datetime
-#esto es porque las paginas de la universidad tienen problemas con ssl
+from file_creator import create_file
+
+
 
 
 
@@ -22,15 +21,8 @@ CIRCULAR_LUGAR = '//div[@class="news-divlist-venue"]/text()'
 CIRCULAR_INFO = '//div[@class="mediaelement mediaelement-image"]//img/@src'
 CIRCULAR_AUTOR = '//div[@class="news-divlist-host"]/text()'
 
-class Evento:
-    def __init__(self,tit,des,fec,e):
-        self.titulo = tit
-        self.descrip = des
-        self.fecha = fec
-        self.enlace = e
 
-def parse_circular(link,today):
-    
+def parse_circular(link):  
     #nos permite ir a un evento y sacar la info. 
     #es como scrapear evento por evento, si está en su propia pagina
     try:
@@ -41,8 +33,6 @@ def parse_circular(link,today):
             event = response.content.decode('utf-8')
             parsed = html.fromstring(event)
             try:
-                #el [0] es porque es una lista de datos. y solo
-                #nos interesa el 0 que es el contenido
                 #une la lista (join)
                 lugar = ''.join(parsed.xpath(CIRCULAR_LUGAR))
                 title = ''.join(parsed.xpath(CIRCULAR_TITULO))
@@ -69,61 +59,25 @@ def parse_circular(link,today):
             except IndexError:
                 return
             #creamos el archivo
-            with open(f'{today}/{str(random.randint(0,1000))}.txt','w',encoding='utf-8'
-                      ) as f:
-                f.write('Titulo evento: ')
-                f.write(title)
-                f.write('\n')
-                f.write('Creador: ')
-                f.write(autor)
-                f.write('\n')
-                f.write('Descripcion: ')
-                f.write(summary)
-                f.write('\n')
-                f.write('Fecha: ')
-                f.write(date)
-                f.write('\n')
-                f.write('Mas informacion: ')
-                f.write(m_info)
-                f.write('\n')  
-                f.write('Lugar: ')
-                f.write(lugar)
+            data_up = {'titulo':title,'lugar':lugar,'creador':autor,'descripcion':summary,'link_img':m_info,'fecha':date}
+            create_file(data_up)
     except ValueError as ve:
         print(ve)
 
-def parse_bienestar(link,titles,descs,dates,today,creador,lugar):
-    #nos permite ir a un evento y sacar la info. 
-    #es como scrapear evento por evento, si está en su propia pagina
- 
+def parse_bienestar(link,titles,descs,dates,creador,lugar):
     for i in range(len(link)):
-            #creamos el archivo
-            with open(f'{today}/{titles[i]}.txt','w',encoding='utf-8'
-                      ) as f:
-                f.write('Titulo: ')
-                f.write(titles[i])
-                f.write('\n\n')
-                f.write('Descripcion: ')
-                f.write(descs[i])
-                f.write('\n---------\n')
-                f.write('Fecha: ')
-                f.write(dates[i])
-                f.write('\n')
-                f.write('link al evento: ')
-                f.write(link[i])
-                f.write('\n')
-                f.write('Creador:' + creador)
-                f.write('\n')
-                f.write('Lugar '+  lugar)
-  
+            #creamos el diccionario
+            data_up = {'titulo':titles[i],'lugar':lugar,'creador':creador,'descripcion':descs[i],'link_img':link[i],'fecha':dates[i]}
+            create_file(data_ev=data_up)
 
-def parse_home():
+def connect_bienestar():
     #antes que nada metemos nuestro codigo en  un try-catch
     #porque no siempre estará disponible el sitio
     try:
         #url de la pagina
         print('conectando con bienestar...')
         response = requests.get('http://bienestar.bogota.unal.edu.co/Actividades-Semanales/Programacion-Bienestar.html',timeout=20)
-        #response = requests.get('https://www.google.com')
+     
         if response.status_code == 200:
             #response.content nos trae el archivo html
             #decode lo convierte a utf-8 para que py lo pueda usar
@@ -134,41 +88,30 @@ def parse_home():
             fechas_eventos = parsed.xpath(XPATH_DATE)
             links_to_events = parsed.xpath(XPATH_LINK_TO_EVENT)
             title_to_events = parsed.xpath(XPATH_TITLE)
-            desc_to_events = parsed.xpath(XPATH_DESC)
-            
-            #print(fechas_eventos)
-            #date nos trae una fecha y today la de ahorita
-            #strftime nos parsea la fecha a una string
-            today = datetime.date.today().strftime('%d-%m-%Y')
-            #si no existe la carpeta 'today' crea una:
-            if not os.path.isdir(today):
-                os.mkdir(today)
-            parse_bienestar(links_to_events,title_to_events,desc_to_events,fechas_eventos,today,'Eventos Bienestar','No especificado')
+            desc_to_events = parsed.xpath(XPATH_DESC)           
+            parse_bienestar(links_to_events,title_to_events,desc_to_events,fechas_eventos,'Eventos Bienestar','No especificado')
             
             
         else:
             raise ValueError(f'Error: {response.status_code}')
     except ValueError as ve:
         print(ve)
-    #circular-un: scrapping
+
+def connect_circular():
+     #circular-un: scrapping
     try:
         #url de la pagina
         print('conectando con circular...')
-        print(requests.certs.where())
         response = requests.get('https://bogota.unal.edu.co/circular-un-bogota/',timeout=10,verify=False)
         if response.status_code == 200:
             print('conectado con circular.. buscando eventos')
             home = response.content.decode('utf-8')
             parsed = html.fromstring(home)
             links_circular = parsed.xpath(CIRCULAR_LINK)
-            #print(links_circular)
-            today = datetime.date.today().strftime('%d-%m-%Y')
-            #si no existe la carpeta 'today' crea una:
-            if not os.path.isdir(today):
-                os.mkdir(today)
+          
             for link in links_circular:
                 print('entrando al link: ' + link)
-                parse_circular(link,today)
+                parse_circular(link)
             
         else:
             raise ValueError(f'Error: {response.status_code}')
@@ -177,7 +120,8 @@ def parse_home():
         
 
 def run():
-    parse_home()
+    connect_bienestar()
+    connect_circular()
     
 if __name__ == '__main__':
     run()

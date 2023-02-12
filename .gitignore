@@ -1,1 +1,3 @@
 venv/
+serviceAccountkey.json
+__pycache__/
