@@ -19,7 +19,7 @@ CIRCULAR_TEXTO = '//div[@class="news-text-wrap"]//span/text()'
 CIRCULAR_FECHA = '//div[@class="news-divlist-startdate"]/text()'
 CIRCULAR_TITULO = '//h3[@itemprop="headline"]/text()'
 CIRCULAR_LUGAR = '//div[@class="news-divlist-venue"]/text()'
-CIRCULAR_INFO = '//div[@class="news-divlist-link"]//a/@href'
+CIRCULAR_INFO = '//div[@class="mediaelement mediaelement-image"]//img/@src'
 CIRCULAR_AUTOR = '//div[@class="news-divlist-host"]/text()'
 
 class Evento:
@@ -51,6 +51,7 @@ def parse_circular(link,today):
                 title.replace('\n','')
                 title.replace('\t','')
                 summary = ''.join(parsed.xpath(CIRCULAR_TEXTO))
+                if summary == '': summary= 'Descripcion no disponible'
                 date = ''.join(parsed.xpath(CIRCULAR_FECHA))
                 date.replace('\"','')
                 date.replace('\n','')
@@ -59,7 +60,7 @@ def parse_circular(link,today):
                 autor.replace('\"','')
                 autor.replace('\n','')
                 autor.replace('\t','')
-                m_info = ''.join(parsed.xpath(CIRCULAR_INFO))
+                m_info = 'https://bogota.unal.edu.co/'+''.join(parsed.xpath(CIRCULAR_INFO))
                 m_info.replace('\"','')
                 m_info.replace('\n','')
                 m_info.replace('\t','')
@@ -90,7 +91,7 @@ def parse_circular(link,today):
     except ValueError as ve:
         print(ve)
 
-def parse_bienestar(link,titles,descs,dates,today):
+def parse_bienestar(link,titles,descs,dates,today,creador,lugar):
     #nos permite ir a un evento y sacar la info. 
     #es como scrapear evento por evento, si está en su propia pagina
  
@@ -110,6 +111,9 @@ def parse_bienestar(link,titles,descs,dates,today):
                 f.write('link al evento: ')
                 f.write(link[i])
                 f.write('\n')
+                f.write('Creador:' + creador)
+                f.write('\n')
+                f.write('Lugar '+  lugar)
   
 
 def parse_home():
@@ -139,7 +143,7 @@ def parse_home():
             #si no existe la carpeta 'today' crea una:
             if not os.path.isdir(today):
                 os.mkdir(today)
-            parse_bienestar(links_to_events,title_to_events,desc_to_events,fechas_eventos,today)
+            parse_bienestar(links_to_events,title_to_events,desc_to_events,fechas_eventos,today,'Eventos Bienestar','No especificado')
             
             
         else:

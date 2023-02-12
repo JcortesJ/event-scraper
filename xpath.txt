@@ -14,6 +14,7 @@ titulo_circular = '//h3[@itemprop="headline"]/text()'
 desc_circular = '//div[@class="news-text-wrap"]//span/text()'
 host_circular = '//div[@class="news-divlist-host"]/text()'
 info_circular = '//div[@class="news-divlist-link"]//a/@href'
+link_imagen = '//div[@class="mediaelement mediaelement-image"]//img/@src'
 lugar_circular = '//div[@class="news-divlist-venue"]/text()'
 fecha_circular = '//div[@class="news-divlist-startdate"]/text()'
 
