@@ -139,7 +139,7 @@ def parse_home():
             #si no existe la carpeta 'today' crea una:
             if not os.path.isdir(today):
                 os.mkdir(today)
-            #parse_bienestar(links_to_events,title_to_events,desc_to_events,fechas_eventos,today)
+            parse_bienestar(links_to_events,title_to_events,desc_to_events,fechas_eventos,today)
             
             
         else:
