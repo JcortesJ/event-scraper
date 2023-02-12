@@ -8,4 +8,4 @@ Event Scraper is a scraper that obtains events from 2 pages of the Universidad N
 
 # How to run the program:
 Install requests and lxml with pip and execute scraper.py. You will get a directory with a file for each event.
-It may not work the firestore uploading function, because in the repo is not the serviceAccountKey due to security reasons
+It may not work the firestore uploading function, because in the repo there is not the serviceAccountKey due to security reasons
