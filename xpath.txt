@@ -10,4 +10,12 @@ Link = '//a[@class="Evento"]//img/@src'
 Para circular un
 
 link_circular = '//div[@class="news-divlist-body"]//div[@class="news-divlist-link"]//a/@href'
+titulo_circular = '//h3[@itemprop="headline"]/text()'
+desc_circular = '//div[@class="news-text-wrap"]//span/text()'
+host_circular = '//div[@class="news-divlist-host"]/text()'
+info_circular = '//div[@class="news-divlist-link"]//a/@href'
+lugar_circular = '//div[@class="news-divlist-venue"]/text()'
+fecha_circular = '//div[@class="news-divlist-startdate"]/text()'
+
+
 
