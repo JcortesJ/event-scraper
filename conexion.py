@@ -17,6 +17,7 @@ def upload_data(data,collection_name,document_id=''):
         print('dato repetido')
     else:
         db.collection(collection_name).document(document_id).set(data)
+        print('Dato nuevo agregado')
     return 0
     #queda pendiente una forma en la cual con un mismo nombre se actualice la info
 """    
