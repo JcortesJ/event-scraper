@@ -62,18 +62,18 @@ def parse_circular(link):
                 return
             #creamos el archivo
             data_up = {'titulo':title,'lugar':lugar,'creador':autor,'descripcion':summary,'link_img':m_info,'fecha':date}
-            #create_file(data_up)
-            upload_data(data_up,'Evento',str(random.randint(0,10000)))
+           # create_file(data_up)
+            upload_data(data=data_up,collection_name='Evento',document_id=str(random.randint(0,10000)))
     except ValueError as ve:
         print(ve)
 
 def parse_bienestar(link,titles,descs,dates,creador,lugar):
     for i in range(len(link)):
             #creamos el diccionario
-            print('evento bienestar: ' +str(i))
+           # print('evento bienestar: ' +str(i))
             data_up = {'titulo':titles[i],'lugar':lugar,'creador':creador,'descripcion':descs[i],'link_img':link[i],'fecha':dates[i]}
             #create_file(data_ev=data_up)
-            upload_data(data_up,'Evento',str(random.randint(0,10000)))
+            upload_data(data=data_up,collection_name='Evento',document_id=str(random.randint(0,10000)))
 
 def connect_bienestar():
     #antes que nada metemos nuestro codigo en  un try-catch
