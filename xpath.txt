@@ -18,5 +18,24 @@ link_imagen = '//div[@class="mediaelement mediaelement-image"]//img/@src'
 lugar_circular = '//div[@class="news-divlist-venue"]/text()'
 fecha_circular = '//div[@class="news-divlist-startdate"]/text()'
 
+Para cartelera de deportes tenemos:
+
+Semanal vitalizate:
+
+Para un evento un dia x:
+Hora_Vita = '//div[@class="Marco"]//div[@class="Hora"]/text()'
+desc_Vita = '//div[@class="Marco"]//div[@class="Txt"]//p'
+nomb_Vita = '//div[@class="Marco"]//div[@class="ACT"]//h3'
+lugar_Vita = '//div[@class="Marco"]//div[@class="ACT"]//h4'
+fecha_Vita = '//div[@class="VitaFecha"]//i'
+
+Eventos y Torneos  vitalizate:
+
+fecha_EV_vita = '//a[@class="Evento"]//h2'
+link_img_vita = '//a[@class="Evento"]//img/@src'
+nombre_vita = '//a[@class="Evento"]//h3'
+descrip_vita = '//a[@class="Evento"]//p'
+
+
 
 

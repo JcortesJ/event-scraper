@@ -22,6 +22,18 @@ CIRCULAR_LUGAR = '//div[@class="news-divlist-venue"]/text()'
 CIRCULAR_INFO = '//div[@class="mediaelement mediaelement-image"]//img/@src'
 CIRCULAR_AUTOR = '//div[@class="news-divlist-host"]/text()'
 
+DEPORTES_FECHA = '//a[@class="Evento"]//h2/text()'
+DEPORTES_LINK= '//a[@class="Evento"]//img/@src'
+DEPORTES_TITULO = '//a[@class="Evento"]//h3/text()'
+#no olvides el text() que hace que no nos marque error al traer un elemento html
+DEPORTES_INFO = '//a[@class="Evento"]//p/text()'
+
+HORA_VITA = '//div[@class="Marco"]//div[@class="Hora"]/text()'
+DESC_VITA = '//div[@class="Marco"]//div[@class="Txt"]//p/text()'
+TITU_VITA = '//div[@class="Marco"]//div[@class="ACT"]//h3/text()'
+LUGAR_VITA = '//div[@class="Marco"]//div[@class="ACT"]//h4/text()'
+LINK_VITA = '//div[@class="Banner Arriba"]//img/@src'
+
 
 def parse_circular(link):  
     #nos permite ir a un evento y sacar la info. 
@@ -68,10 +80,17 @@ def parse_circular(link):
         print(ve)
 
 def parse_bienestar(link,titles,descs,dates,creador,lugar):
+    #esta funcion recibe una seria de listas: links, titulos, infos y fechas.
+    #se organizan en un for, donde se crea un diccionario que se sube a la base de datos
+    #cada diccionario simboliza un evento
+    
     for i in range(len(link)):
             #creamos el diccionario
            # print('evento bienestar: ' +str(i))
-            data_up = {'titulo':titles[i],'lugar':lugar,'creador':creador,'descripcion':descs[i],'link_img':link[i],'fecha':dates[i]}
+            if type(lugar) !=  list:
+                data_up = {'titulo':titles[i],'lugar':lugar,'creador':creador,'descripcion':descs[i],'link_img':link[i],'fecha':dates[i]}
+            else:
+                data_up = {'titulo':titles[i],'lugar':lugar[i],'creador':creador,'descripcion':descs[i],'link_img':link[i],'fecha':dates[i]+' Actividad Semanal'}
             #create_file(data_ev=data_up)
             upload_data(data=data_up,collection_name='Evento',document_id=str(random.randint(0,10000)))
 
@@ -102,6 +121,64 @@ def connect_bienestar():
     except ValueError as ve:
         print(ve)
 
+def connect_deportes():
+    #antes que nada metemos nuestro codigo en  un try-catch
+    #porque no siempre estará disponible el sitio
+    try:
+        #url de la pagina
+        print('conectando con deportes...')
+        response = requests.get('http://bienestar.bogota.unal.edu.co/Cartelera-Deportes/Cartelera_Deportes.html',timeout=20)
+     
+        if response.status_code == 200:
+            #response.content nos trae el archivo html
+            #decode lo convierte a utf-8 para que py lo pueda usar
+            home = response.content.decode('utf-8')
+            #parsed convierte el string a un objeto python
+            parsed = html.fromstring(home)
+            #luego con xpath seleccionamos lo que nos interesa
+            fechas_eventos = parsed.xpath(DEPORTES_FECHA)
+            links_to_events = parsed.xpath(DEPORTES_LINK)
+            title_to_events = parsed.xpath(DEPORTES_TITULO)
+            desc_to_events = parsed.xpath(DEPORTES_INFO) 
+            parse_bienestar(links_to_events,title_to_events,desc_to_events,fechas_eventos,'Eventos Deportes','No especificado')
+            
+            
+        else:
+            raise ValueError(f'Error: {response.status_code}')
+    except ValueError as ve:
+        print(ve)
+        
+def connect_vitalizate():
+    #antes que nada metemos nuestro codigo en  un try-catch
+    #porque no siempre estará disponible el sitio
+    try:
+        #url de la pagina
+        print('conectando con vitalizate...')
+        response = requests.get('http://bienestar.bogota.unal.edu.co/Cartelera-Deportes/Cartelera_Deportes.html',timeout=20)
+     
+        if response.status_code == 200:
+            #response.content nos trae el archivo html
+            #decode lo convierte a utf-8 para que py lo pueda usar
+            home = response.content.decode('utf-8')
+            #parsed convierte el string a un objeto python
+            parsed = html.fromstring(home)
+            #luego con xpath seleccionamos lo que nos interesa
+            fechas_eventos = parsed.xpath(HORA_VITA)
+            links_to_events = []
+            for i in range(len(fechas_eventos)):
+                links_to_events.append(parsed.xpath(LINK_VITA)[0])
+            title_to_events = parsed.xpath(TITU_VITA)
+            desc_to_events = parsed.xpath(DESC_VITA) 
+            lugar_evento = parsed.xpath(LUGAR_VITA)
+            parse_bienestar(links_to_events,title_to_events,desc_to_events,fechas_eventos,'Programa Vitalizate',lugar=lugar_evento)
+            
+            
+        else:
+            raise ValueError(f'Error: {response.status_code}')
+    except ValueError as ve:
+        print(ve)
+
+
 def connect_circular():
      #circular-un: scrapping
     try:
@@ -122,10 +199,12 @@ def connect_circular():
     except ValueError as ve:
         print(ve)
         
-
+        
 def run():
     connect_bienestar()
     connect_circular()
+    connect_deportes()
+    connect_vitalizate()
     
 if __name__ == '__main__':
     run()
