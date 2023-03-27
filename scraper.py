@@ -34,6 +34,13 @@ TITU_VITA = '//div[@class="Marco"]//div[@class="ACT"]//h3/text()'
 LUGAR_VITA = '//div[@class="Marco"]//div[@class="ACT"]//h4/text()'
 LINK_VITA = '//div[@class="Banner Arriba"]//img/@src'
 
+def limpiar_espacios(s):
+    for i in range(len(s)-1):
+        if s[i] != ' ':
+            #actualizamos la cadena desde el primer simbolo sin espacios en blanco hasta el final
+            s = s[i:]
+            return s
+    return s
 
 def parse_circular(link):  
     #nos permite ir a un evento y sacar la info. 
@@ -48,25 +55,22 @@ def parse_circular(link):
             try:
                 #une la lista (join)
                 lugar = ''.join(parsed.xpath(CIRCULAR_LUGAR))
+                lugar = lugar.replace('\n                    ','')
+                lugar = lugar.replace('\n                ','')
                 title = ''.join(parsed.xpath(CIRCULAR_TITULO))
                 #estilizamos el titulo
-                title.replace('\"','')
-                title.replace('\n','')
-                title.replace('\t','')
+                title = limpiar_espacios(title)
                 summary = ''.join(parsed.xpath(CIRCULAR_TEXTO))
                 if summary == '': summary= 'Descripcion no disponible'
                 date = ''.join(parsed.xpath(CIRCULAR_FECHA))
-                date.replace('\"','')
-                date.replace('\n','')
-                date.replace('\t','')
+                date = date.replace('\n                    ','')
+                date = date.replace('\n','')
+                date = limpiar_espacios(date)
+                date = date.replace('               ','')
                 autor = ''.join(parsed.xpath(CIRCULAR_AUTOR))
-                autor.replace('\"','')
-                autor.replace('\n','')
-                autor.replace('\t','')
+                autor = autor.replace('\n                    ','')
+                autor = autor.replace('\n                ','')
                 m_info = 'https://bogota.unal.edu.co/'+''.join(parsed.xpath(CIRCULAR_INFO))
-                m_info.replace('\"','')
-                m_info.replace('\n','')
-                m_info.replace('\t','')
                 print('datos tomados, escribiendo en archivo..')
                 print('-----------')
                 
@@ -74,7 +78,8 @@ def parse_circular(link):
                 return
             #creamos el archivo
             data_up = {'titulo':title,'lugar':lugar,'creador':autor,'descripcion':summary,'link_img':m_info,'fecha':date}
-           # create_file(data_up)
+            #print(data_up)
+            #create_file(data_up)
             upload_data(data=data_up,collection_name='Evento',document_id=str(random.randint(0,10000)))
     except ValueError as ve:
         print(ve)
